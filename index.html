@@ -2,178 +2,1122 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>LED Control</title>
-<style>:root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c28;--border:#2a2a3a;--accent:#ff6b35;--accent2:#7c4dff;--accent3:#00e5ff;--text:#e8e8f0;--muted:#6b6b85;--success:#00e676;--error:#ff1744;--radius:16px;}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Syne',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 80px 0;}header{padding:24px 20px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:100;}.logo{font-size:20px;font-weight:800;letter-spacing:-0.5px;}.logo span{color:var(--accent);}.scan-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Space Mono',ui-monospace,monospace;font-size:11px;padding:8px 14px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.2s;}.scan-btn:hover{border-color:var(--accent3);color:var(--accent3);}.scan-btn.scanning{border-color:var(--accent);color:var(--accent);}.scan-dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 1s infinite;}@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}#scan-status{margin:16px 20px 0;font-family:'Space Mono',ui-monospace,monospace;font-size:11px;color:var(--muted);display:none;}#scan-bar-wrap{height:2px;background:var(--surface2);border-radius:2px;margin-top:6px;overflow:hidden;display:none;}#scan-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent3));border-radius:2px;transition:width 0.1s linear;}#empty-state{text-align:center;padding:60px 40px;display:none;}#empty-state .icon{font-size:48px;margin-bottom:16px;}#empty-state h2{font-size:20px;margin-bottom:8px;}#empty-state p{color:var(--muted);font-size:14px;line-height:1.6;}#devices{padding:20px;display:flex;flex-direction:column;gap:16px;}.device-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;animation:slideIn 0.3s ease;}@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.device-header{display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer;border-bottom:1px solid var(--border);}.device-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}.icon-faretto{background:#ff6b3520;}.icon-matrice8{background:#7c4dff20;}.icon-matrice16{background:#00e5ff20;}.device-info{flex:1;}.device-name{font-weight:700;font-size:16px;line-height:1.2;}.device-meta{font-family:'Space Mono',ui-monospace,monospace;font-size:10px;color:var(--muted);margin-top:2px;}.device-status{display:flex;align-items:center;gap:6px;font-family:'Space Mono',ui-monospace,monospace;font-size:10px;}.status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success);}.status-dot.offline{background:var(--muted);box-shadow:none;}.device-actions{display:flex;align-items:center;gap:8px;}.identify-btn{background:none;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;}.identify-btn:hover{border-color:var(--accent3);color:var(--accent3);}.collapse-arrow{color:var(--muted);font-size:12px;transition:transform 0.25s;flex-shrink:0;}.device-card.open .collapse-arrow{transform:rotate(180deg);}.device-body{display:none;padding:16px;flex-direction:column;gap:14px;}.device-card.open .device-body{display:flex;}.section-label{font-family:'Space Mono',ui-monospace,monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}.pills{display:flex;flex-wrap:wrap;gap:6px;}.pill{padding:7px 14px;border-radius:100px;border:1px solid var(--border);background:none;color:var(--text);font-family:'Syne',system-ui,-apple-system,sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;white-space:nowrap;}.pill:hover{border-color:var(--accent);color:var(--accent);}.pill.active{background:var(--accent);border-color:var(--accent);color:white;}.pill.off.active{background:var(--error);border-color:var(--error);}.slider-row{display:flex;align-items:center;gap:12px;}.slider-row input[type=range]{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--surface2);outline:none;cursor:pointer;}.slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 8px var(--accent)80;}.slider-val{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;color:var(--muted);min-width:32px;text-align:right;}.color-row{display:flex;align-items:center;gap:12px;}.color-row input[type=color]{width:48px;height:48px;border-radius:12px;border:2px solid var(--border);background:none;cursor:pointer;padding:2px;flex-shrink:0;}.color-presets{display:flex;gap:8px;flex-wrap:wrap;}.color-swatch{width:32px;height:32px;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:transform 0.15s,border-color 0.15s;}.color-swatch:hover{transform:scale(1.15);border-color:white;}.text-input-row{display:flex;gap:8px;}.text-input-row input[type=text]{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Space Mono',ui-monospace,monospace;font-size:13px;padding:10px 14px;outline:none;transition:border-color 0.2s;}.text-input-row input[type=text]:focus{border-color:var(--accent);}.send-btn{background:var(--accent);border:none;border-radius:10px;color:white;font-family:'Syne',system-ui,-apple-system,sans-serif;font-weight:700;font-size:13px;padding:10px 16px;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;}.send-btn:hover{opacity:0.85;}.draw-section{}.draw-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}.draw-color{width:36px;height:36px;border-radius:8px;border:2px solid var(--border);cursor:pointer;padding:2px;}.tool-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;padding:6px 12px;cursor:pointer;font-family:'Space Mono',ui-monospace,monospace;transition:all 0.15s;}.tool-btn:hover{border-color:var(--accent);color:var(--accent);}.tool-btn.active{background:var(--accent2);border-color:var(--accent2);color:white;}.pixel-grid{display:grid;gap:2px;border:1px solid var(--border);border-radius:8px;padding:6px;background:var(--surface2);touch-action:none;user-select:none;-webkit-user-select:none;}.pixel{border-radius:3px;cursor:crosshair;background:#111;transition:background 0.05s;aspect-ratio:1;}.pixel:hover{opacity:0.85;}.dir-grid{display:grid;grid-template-columns:repeat(4,auto);gap:6px;width:fit-content;}.dir-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;padding:6px 10px;cursor:pointer;font-family:'Space Mono',ui-monospace,monospace;transition:all 0.15s;}.dir-btn:hover{border-color:var(--accent2);color:var(--accent2);}.dir-btn.active{background:var(--accent2);border-color:var(--accent2);color:white;}.save-row{display:flex;gap:8px;padding-top:4px;border-top:1px solid var(--border);}.save-btn{flex:1;background:none;border:1px solid var(--success);border-radius:10px;color:var(--success);font-family:'Syne',system-ui,-apple-system,sans-serif;font-weight:700;font-size:13px;padding:11px;cursor:pointer;transition:all 0.2s;}.save-btn:hover{background:var(--success)20;}.save-btn.saved{background:var(--success);color:white;}.reset-wifi-btn{background:none;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-family:'Space Mono',ui-monospace,monospace;font-size:10px;padding:11px 12px;cursor:pointer;transition:all 0.2s;white-space:nowrap;}.reset-wifi-btn:hover{border-color:var(--error);color:var(--error);}#sync-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 20px;display:none;align-items:center;gap:10px;z-index:200;}#sync-bar.visible{display:flex;}#sync-bar .sync-label{font-family:'Space Mono',ui-monospace,monospace;font-size:11px;color:var(--muted);flex:1;}.sync-effect-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',ui-monospace,monospace;font-size:11px;padding:8px 12px;cursor:pointer;transition:all 0.15s;}.sync-effect-btn:hover{border-color:var(--accent3);color:var(--accent3);}.sync-off-btn{background:var(--error)20;border:1px solid var(--error);border-radius:8px;color:var(--error);font-family:'Space Mono',ui-monospace,monospace;font-size:11px;padding:8px 12px;cursor:pointer;}#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Space Mono',ui-monospace,monospace;font-size:12px;padding:10px 18px;border-radius:100px;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;z-index:300;}#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}.skeleton{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;height:16px;}@keyframes shimmer{0%{background-position:200%}100%{background-position:-200%}}</style>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c28;
+    --border: #2a2a3a;
+    --accent: #ff6b35;
+    --accent2: #7c4dff;
+    --accent3: #00e5ff;
+    --text: #e8e8f0;
+    --muted: #6b6b85;
+    --success: #00e676;
+    --error: #ff1744;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 80px 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 24px 20px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+  .logo {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--accent); }
+
+  .scan-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .scan-btn:hover { border-color: var(--accent3); color: var(--accent3); }
+  .scan-btn.scanning { border-color: var(--accent); color: var(--accent); }
+  .scan-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── SCAN PROGRESS ── */
+  #scan-status {
+    margin: 16px 20px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    display: none;
+  }
+  #scan-bar-wrap {
+    height: 2px;
+    background: var(--surface2);
+    border-radius: 2px;
+    margin-top: 6px;
+    overflow: hidden;
+    display: none;
+  }
+  #scan-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    border-radius: 2px;
+    transition: width 0.1s linear;
+  }
+
+  /* ── EMPTY STATE ── */
+  #empty-state {
+    text-align: center;
+    padding: 60px 40px;
+    display: none;
+  }
+  #empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+  #empty-state h2 { font-size: 20px; margin-bottom: 8px; }
+  #empty-state p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+  /* ── DEVICES GRID ── */
+  #devices {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── DEVICE CARD ── */
+  .device-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  .device-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+  }
+  .device-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .icon-faretto  { background: #ff6b3520; }
+  .icon-matrice8 { background: #7c4dff20; }
+  .icon-matrice16{ background: #00e5ff20; }
+
+  .device-info { flex: 1; }
+  .device-name {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+  .device-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .device-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 6px var(--success);
+  }
+  .status-dot.offline { background: var(--muted); box-shadow: none; }
+
+  .device-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .identify-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .identify-btn:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  .collapse-arrow {
+    color: var(--muted);
+    font-size: 12px;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .device-card.open .collapse-arrow { transform: rotate(180deg); }
+
+  /* ── DEVICE BODY ── */
+  .device-body {
+    display: none;
+    padding: 16px;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .device-card.open .device-body { display: flex; }
+
+  /* ── SECTIONS ── */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  /* ── MODE PILLS ── */
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .pill {
+    padding: 7px 14px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .pill:hover { border-color: var(--accent); color: var(--accent); }
+  .pill.active { background: var(--accent); border-color: var(--accent); color: white; }
+  .pill.off.active { background: var(--error); border-color: var(--error); }
+
+  /* ── BRIGHTNESS ── */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .slider-row input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--surface2);
+    outline: none;
+    cursor: pointer;
+  }
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--accent)80;
+  }
+  .slider-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 32px;
+    text-align: right;
+  }
+
+  /* ── COLOR ── */
+  .color-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .color-row input[type=color] {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: none;
+    cursor: pointer;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+  .color-presets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .color-swatch {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .color-swatch:hover { transform: scale(1.15); border-color: white; }
+
+  /* ── TEXT INPUT (matrici) ── */
+  .text-input-row {
+    display: flex;
+    gap: 8px;
+  }
+  .text-input-row input[type=text] {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .text-input-row input[type=text]:focus { border-color: var(--accent); }
+  .send-btn {
+    background: var(--accent);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 10px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .send-btn:hover { opacity: 0.85; }
+
+  /* ── DRAW GRID ── */
+  .draw-section { }
+  .draw-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .draw-color {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    padding: 2px;
+  }
+  .tool-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 12px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    transition: all 0.15s;
+  }
+  .tool-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tool-btn.active { background: var(--accent2); border-color: var(--accent2); color: white; }
+
+  .pixel-grid {
+    display: grid;
+    gap: 2px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px;
+    background: var(--surface2);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .pixel {
+    border-radius: 3px;
+    cursor: crosshair;
+    background: #111;
+    transition: background 0.05s;
+    aspect-ratio: 1;
+  }
+  .pixel:hover { opacity: 0.85; }
+
+  /* ── SPEED SLIDER ── */
+  /* reuse slider-row */
+
+  /* ── DIRECTION BUTTONS ── */
+  .dir-grid {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    gap: 6px;
+    width: fit-content;
+  }
+  .dir-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    transition: all 0.15s;
+  }
+  .dir-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+  .dir-btn.active { background: var(--accent2); border-color: var(--accent2); color: white; }
+
+  /* ── SAVE ── */
+  .save-row {
+    display: flex;
+    gap: 8px;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+  }
+  .save-btn {
+    flex: 1;
+    background: none;
+    border: 1px solid var(--success);
+    border-radius: 10px;
+    color: var(--success);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .save-btn:hover { background: var(--success)20; }
+  .save-btn.saved { background: var(--success); color: white; }
+
+  .reset-wifi-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 11px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .reset-wifi-btn:hover { border-color: var(--error); color: var(--error); }
+
+  /* ── SYNC BAR ── */
+  #sync-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 12px 20px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    z-index: 200;
+  }
+  #sync-bar.visible { display: flex; }
+  #sync-bar .sync-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    flex: 1;
+  }
+  .sync-effect-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sync-effect-btn:hover { border-color: var(--accent3); color: var(--accent3); }
+  .sync-off-btn {
+    background: var(--error)20;
+    border: 1px solid var(--error);
+    border-radius: 8px;
+    color: var(--error);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 80px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    padding: 10px 18px;
+    border-radius: 100px;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 300;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── LOADING SKELETON ── */
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface2) 25%, var(--surface) 50%, var(--surface2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+    height: 16px;
+  }
+  @keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
+</style>
 </head>
 <body>
+
 <header>
-<div class="logo">LED<span>.</span>ctrl</div>
-<button class="scan-btn" id="scanBtn" onclick="startScan()">
-<span id="scanDotEl" style="display:none" class="scan-dot"></span>
-<span id="scanLabel">🔍 Cerca</span>
-</button>
+  <div class="logo">LED<span>.</span>ctrl</div>
+  <button class="scan-btn" id="scanBtn" onclick="startScan()">
+    <span id="scanDotEl" style="display:none" class="scan-dot"></span>
+    <span id="scanLabel">🔍 Cerca</span>
+  </button>
 </header>
+
 <div id="scan-status"></div>
 <div id="scan-bar-wrap"><div id="scan-bar"></div></div>
+
 <div id="devices"></div>
+
 <div id="empty-state">
-<div class="icon">📡</div>
-<h2>Nessun dispositivo trovato</h2>
-<p>Assicurati che i dispositivi siano accesi e connessi alla stessa rete WiFi del tuo telefono,poi premi <strong>Cerca</strong>.</p>
+  <div class="icon">📡</div>
+  <h2>Nessun dispositivo trovato</h2>
+  <p>Assicurati che i dispositivi siano accesi e connessi alla stessa rete WiFi del tuo telefono, poi premi <strong>Cerca</strong>.</p>
 </div>
+
 <div id="sync-bar">
-<span class="sync-label">⚡ Sync tutti</span>
-<button class="sync-effect-btn" onclick="syncAll('RAINBOW')">🌈 Arcobaleno</button>
-<button class="sync-effect-btn" onclick="syncAll('FIRE')">🔥 Fuoco</button>
-<button class="sync-off-btn" onclick="syncAll('OFF')">⏹ Off</button>
+  <span class="sync-label">⚡ Sync tutti</span>
+  <button class="sync-effect-btn" onclick="syncAll('RAINBOW')">🌈 Arcobaleno</button>
+  <button class="sync-effect-btn" onclick="syncAll('FIRE')">🔥 Fuoco</button>
+  <button class="sync-off-btn" onclick="syncAll('OFF')">⏹ Off</button>
 </div>
+
 <div id="toast"></div>
+
 <script>
 // ─────────────────────────────────────────────
 //  STORAGE
 // ─────────────────────────────────────────────
-const STORAGE_KEY = 'led_devices_v2';function saveDevices(devs){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(devs));}catch(e){}}function loadDevices(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];}catch(e){return [];}}// ─────────────────────────────────────────────
+const STORAGE_KEY = 'led_devices_v2';
+
+function saveDevices(devs) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(devs)); } catch(e){}
+}
+function loadDevices() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e){ return []; }
+}
+
+// ─────────────────────────────────────────────
 //  STATE
 // ─────────────────────────────────────────────
-let devices = [];//{ip,type,name,hostname,leds,online,status:{}}let isScanning = false;// Known hostnames for mDNS-first approach
-const MDNS_NAMES = ['lampada','matrice8','matrice16'];// ─────────────────────────────────────────────
+let devices = []; // { ip, type, name, hostname, leds, online, status:{} }
+let isScanning = false;
+
+// Known hostnames for mDNS-first approach
+const MDNS_NAMES = ['lampada', 'matrice8', 'matrice16'];
+
+// ─────────────────────────────────────────────
 //  INIT
 // ─────────────────────────────────────────────
-window.onload = async () =>{devices = loadDevices();if (devices.length > 0){renderAll();refreshAll();// verify they still respond}else{document.getElementById('empty-state').style.display = 'block';// Auto-scan on first open
-startScan();}};// ─────────────────────────────────────────────
+window.onload = async () => {
+  devices = loadDevices();
+  if (devices.length > 0) {
+    renderAll();
+    refreshAll(); // verify they still respond
+  } else {
+    document.getElementById('empty-state').style.display = 'block';
+    // Auto-scan on first open
+    startScan();
+  }
+};
+
+// ─────────────────────────────────────────────
 //  REFRESH KNOWN DEVICES
 // ─────────────────────────────────────────────
-async function refreshAll(){for (const dev of devices){const info = await fetchInfo(dev.ip);if (info){dev.online = true;dev.type = info.type;dev.name = info.name;}else{dev.online = false;}const card = document.getElementById('card_' + dev.ip.replace(/\./g,'_'));if (card) updateCardStatus(card,dev);}saveDevices(devices);updateSyncBar();}// ─────────────────────────────────────────────
+async function refreshAll() {
+  for (const dev of devices) {
+    const info = await fetchInfo(dev.ip);
+    if (info) {
+      dev.online = true;
+      dev.type = info.type;
+      dev.name = info.name;
+    } else {
+      dev.online = false;
+    }
+    const card = document.getElementById('card_' + dev.ip.replace(/\./g,'_'));
+    if (card) updateCardStatus(card, dev);
+  }
+  saveDevices(devices);
+  updateSyncBar();
+}
+
+// ─────────────────────────────────────────────
 //  SCAN
 // ─────────────────────────────────────────────
-async function startScan(){if (isScanning) return;isScanning = true;const btn = document.getElementById('scanBtn');const dot = document.getElementById('scanDotEl');const label = document.getElementById('scanLabel');btn.classList.add('scanning');dot.style.display = 'inline-block';label.textContent = 'Ricerca...';const statusEl = document.getElementById('scan-status');const barWrap = document.getElementById('scan-bar-wrap');const bar = document.getElementById('scan-bar');statusEl.style.display = 'block';barWrap.style.display = 'block';bar.style.width = '0%';const found = [];// STEP 1:try mDNS hostnames first (fast)
-statusEl.textContent = 'Provo hostname mDNS...';for (const host of MDNS_NAMES){statusEl.textContent = `Provo ${host}.local...`;const info = await fetchInfo(host + '.local');if (info){found.push({ip:host + '.local',...info,online:true});}}// STEP 2:scan local subnet
-const subnet = await detectSubnet();if (subnet){statusEl.textContent = `Scansione rete ${subnet}.x (254 IP)...`;const BATCH = 20;for (let start = 1;start <= 254;start += BATCH){const promises = [];for (let i = start;i < start + BATCH && i <= 254;i++){const ip = subnet + '.' + i;// skip if already found via mDNS
-if (found.some(d => d.ip === ip)) continue;promises.push(
-fetchInfo(ip).then(info => info ?{ip,...info,online:true}:null)
-);}const results = await Promise.all(promises);results.forEach(r =>{if (r) found.push(r);});bar.style.width = Math.min(100,Math.round((start / 254) * 100)) + '%';// show found devices as they appear
-mergeAndRender(found);}}bar.style.width = '100%';statusEl.textContent = found.length > 0
-? `✓ ${found.length}dispositivo/i trovato/i`:'Nessun dispositivo trovato';mergeAndRender(found);saveDevices(devices);updateSyncBar();btn.classList.remove('scanning');dot.style.display = 'none';label.textContent = '🔍 Cerca';isScanning = false;setTimeout(() =>{statusEl.style.display = 'none';barWrap.style.display = 'none';},3000);}function mergeAndRender(found){// merge found into devices,avoiding duplicates
-for (const f of found){const existing = devices.find(d => d.ip === f.ip || d.type === f.type);if (!existing){devices.push(f);}else{Object.assign(existing,f);}}renderAll();}async function detectSubnet(){// Try to infer subnet by pinging common gateway addresses
-// We try .1 and .254 of common private subnets
-const candidates = ['192.168.1','192.168.0','10.0.0','10.0.1','172.16.0'];for (const sub of candidates){const r = await fetchInfoRaw(sub + '.1',600);if (r !== null) return sub;const r2 = await fetchInfoRaw(sub + '.254',600);if (r2 !== null) return sub;}return '192.168.1';// fallback}// ─────────────────────────────────────────────
+async function startScan() {
+  if (isScanning) return;
+  isScanning = true;
+
+  const btn = document.getElementById('scanBtn');
+  const dot = document.getElementById('scanDotEl');
+  const label = document.getElementById('scanLabel');
+  btn.classList.add('scanning');
+  dot.style.display = 'inline-block';
+  label.textContent = 'Ricerca...';
+
+  const statusEl = document.getElementById('scan-status');
+  const barWrap = document.getElementById('scan-bar-wrap');
+  const bar = document.getElementById('scan-bar');
+  statusEl.style.display = 'block';
+  barWrap.style.display = 'block';
+  bar.style.width = '0%';
+
+  const found = [];
+
+  // STEP 1: try mDNS hostnames first (fast)
+  statusEl.textContent = 'Provo hostname mDNS...';
+  for (const host of MDNS_NAMES) {
+    statusEl.textContent = `Provo ${host}.local...`;
+    const info = await fetchInfo(host + '.local');
+    if (info) {
+      found.push({ ip: host + '.local', ...info, online: true });
+    }
+  }
+
+  // STEP 2: scan local subnet
+  const subnet = await detectSubnet();
+  if (subnet) {
+    statusEl.textContent = `Scansione rete ${subnet}.x (254 IP)...`;
+    const BATCH = 20;
+    for (let start = 1; start <= 254; start += BATCH) {
+      const promises = [];
+      for (let i = start; i < start + BATCH && i <= 254; i++) {
+        const ip = subnet + '.' + i;
+        // skip if già trovato via mDNS con stesso hostname
+        if (found.some(d => d.ip === ip)) continue;
+        promises.push(
+          fetchInfo(ip).then(info => info ? { ip, ...info, online: true } : null)
+        );
+      }
+      const results = await Promise.all(promises);
+      results.forEach(r => { if (r) found.push(r); });
+      bar.style.width = Math.min(100, Math.round((start / 254) * 100)) + '%';
+      // show found devices as they appear
+      mergeAndRender(found);
+    }
+  }
+
+  bar.style.width = '100%';
+  statusEl.textContent = found.length > 0
+    ? `✓ ${found.length} dispositivo/i trovato/i`
+    : 'Nessun dispositivo trovato';
+
+  mergeAndRender(found);
+  saveDevices(devices);
+  updateSyncBar();
+
+  btn.classList.remove('scanning');
+  dot.style.display = 'none';
+  label.textContent = '🔍 Cerca';
+  isScanning = false;
+
+  setTimeout(() => {
+    statusEl.style.display = 'none';
+    barWrap.style.display = 'none';
+  }, 3000);
+}
+
+function mergeAndRender(found) {
+  // Deduplicazione: hostname è la chiave primaria (stesso dispositivo trovato via mDNS e IP)
+  for (const f of found) {
+    const existing = devices.find(d =>
+      (f.hostname && d.hostname && d.hostname === f.hostname) ||
+      d.ip === f.ip
+    );
+    if (!existing) {
+      devices.push(f);
+    } else {
+      // Preferisci l'IP numerico rispetto a .local per i comandi (più affidabile)
+      const keepIp = f.ip && !f.ip.includes('.local') ? f.ip : existing.ip;
+      Object.assign(existing, f);
+      existing.ip = keepIp;
+    }
+  }
+  // Rimuovi eventuali duplicati rimasti nell'array devices stesso
+  const seen = new Set();
+  devices = devices.filter(d => {
+    const key = d.hostname || d.ip;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  renderAll();
+}
+
+async function detectSubnet() {
+  return new Promise(resolve => {
+    try {
+      const pc = new RTCPeerConnection({ iceServers: [] });
+      pc.createDataChannel('');
+      pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => resolve('192.168.1'));
+      const timer = setTimeout(() => { pc.close(); resolve('192.168.1'); }, 3000);
+      pc.onicecandidate = e => {
+        if (!e.candidate) return;
+        const m = e.candidate.candidate.match(/(\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}/);
+        if (m && !m[1].startsWith('127') && !m[1].startsWith('169.254')) {
+          clearTimeout(timer);
+          pc.close();
+          resolve(m[1]);
+        }
+      };
+    } catch(e) { resolve('192.168.1'); }
+  });
+}
+
+// ─────────────────────────────────────────────
 //  HTTP HELPERS
 // ─────────────────────────────────────────────
-async function fetchInfo(host){try{const res = await fetch(`http://${host}/api/info`,{signal:AbortSignal.timeout(1200)});if (!res.ok) return null;return await res.json();}catch{return null;}}async function fetchInfoRaw(ip,timeout = 1000){try{const res = await fetch(`http://${ip}/api/info`,{signal:AbortSignal.timeout(timeout)});return res.ok ? await res.json():null;}catch{return null;}}async function api(ip,path){try{await fetch(`http://${ip}${path}`,{signal:AbortSignal.timeout(3000)});}catch(e){showToast('⚠ Dispositivo non raggiungibile');}}// ─────────────────────────────────────────────
+async function fetchInfo(host) {
+  try {
+    const res = await fetch(`http://${host}/api/info`, { signal: AbortSignal.timeout(1200) });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch { return null; }
+}
+
+async function fetchInfoRaw(ip, timeout = 1000) {
+  try {
+    const res = await fetch(`http://${ip}/api/info`, { signal: AbortSignal.timeout(timeout) });
+    return res.ok ? await res.json() : null;
+  } catch { return null; }
+}
+
+async function api(ip, path) {
+  try {
+    await fetch(`http://${ip}${path}`, { signal: AbortSignal.timeout(3000) });
+  } catch(e) {
+    showToast('⚠ Dispositivo non raggiungibile');
+  }
+}
+
+// ─────────────────────────────────────────────
 //  RENDER
 // ─────────────────────────────────────────────
-function renderAll(){const container = document.getElementById('devices');const emptyState = document.getElementById('empty-state');if (devices.length === 0){emptyState.style.display = 'block';container.innerHTML = '';return;}emptyState.style.display = 'none';devices.forEach(dev =>{const id = 'card_' + dev.ip.replace(/\./g,'_');if (!document.getElementById(id)){container.appendChild(buildCard(dev));}});}function buildCard(dev){const id = 'card_' + dev.ip.replace(/\./g,'_');const icons ={faretto:'💡',matrice8:'🟦',matrice16:'⬛'};const iconClass ={faretto:'icon-faretto',matrice8:'icon-matrice8',matrice16:'icon-matrice16'};const accentColors ={faretto:'var(--accent)',matrice8:'var(--accent2)',matrice16:'var(--accent3)'};const hasMatrix = dev.type === 'matrice8' || dev.type === 'matrice16';const gridSize = dev.type === 'matrice16' ? 16:8;const div = document.createElement('div');div.className = 'device-card';div.id = id;div.innerHTML = `
-<div class="device-header" onclick="toggleCard('${id}')">
-<div class="device-icon ${iconClass[dev.type] || 'icon-faretto'}">${icons[dev.type] || '💡'}</div>
-<div class="device-info">
-<div class="device-name">${dev.name}</div>
-<div class="device-meta">${dev.ip}· ${dev.leds}LED</div>
-</div>
-<div class="device-actions">
-<div class="device-status">
-<div class="status-dot ${dev.online ? '':'offline'}"></div>
-<span>${dev.online ? 'Online':'Offline'}</span>
-</div>
-<button class="identify-btn" onclick="event.stopPropagation();identify('${dev.ip}')" title="Identifica">📍</button>
-<span class="collapse-arrow">▼</span>
-</div>
-</div>
-<div class="device-body">
-<div>
-<div class="section-label">Modalità</div>
-<div class="pills" id="pills_${id}">
-<button class="pill off" onclick="setOff('${dev.ip}','${id}')">⏹ Off</button>
-<button class="pill" onclick="setMode('${dev.ip}','${id}','RAINBOW')">🌈 Arcobaleno</button>
-<button class="pill" onclick="setMode('${dev.ip}','${id}','FIRE')">🔥 Fuoco</button>
-<button class="pill" onclick="setMode('${dev.ip}','${id}','TWINKLE')">✨ Stelle</button>
-${hasMatrix ? `<button class="pill" onclick="setMode('${dev.ip}','${id}','TEXT')">📝 Testo</button>`:''}${hasMatrix ? `<button class="pill" onclick="setMode('${dev.ip}','${id}','DRAW')">🎨 Disegna</button>`:''}</div>
-</div>
-<div id="solid_section_${id}">
-<div class="section-label">Colore fisso</div>
-<div class="color-row">
-<input type="color" id="color_${id}" value="#ffffff"
-onchange="setSolid('${dev.ip}','${id}',this.value)">
-<div class="color-presets">
-${['#ffffff','#ff4500','#ff8c00','#ffd700','#00ff88','#00bfff','#8a2be2','#ff69b4'].map(c =>
-`<div class="color-swatch" style="background:${c}" onclick="setColorAndSolid('${dev.ip}','${id}','${c}')"></div>`
-).join('')}</div>
-</div>
-</div>
-<div>
-<div class="section-label">Luminosità</div>
-<div class="slider-row">
-<input type="range" min="10" max="255" value="80" id="bright_${id}"
-oninput="document.getElementById('brightval_${id}').textContent=Math.round(this.value/2.55)+'%'"
-onchange="setBrightness('${dev.ip}',this.value)">
-<span class="slider-val" id="brightval_${id}">31%</span>
-</div>
-</div>
-${hasMatrix ? `
-<div id="speed_section_${id}" style="display:none">
-<div class="section-label">Velocità animazione</div>
-<div class="slider-row">
-<input type="range" min="5" max="200" value="25" id="speed_${id}"
-oninput="document.getElementById('speedval_${id}').textContent=this.value+'ms'"
-onchange="setSpeed('${dev.ip}',this.value)">
-<span class="slider-val" id="speedval_${id}">25ms</span>
-</div>
-</div>
-<div id="dir_section_${id}" style="display:none">
-<div class="section-label">Direzione</div>
-<div class="dir-grid" id="dir_${id}">
-${['NE','NW','SE','SW'].map(d =>
-`<button class="dir-btn ${d==='SE'?'active':''}" onclick="setDir('${dev.ip}','${id}','${d}')">${d}</button>`
-).join('')}</div>
-</div>
-<div id="text_section_${id}" style="display:none">
-<div class="section-label">Testo scorrevole</div>
-<div class="text-input-row">
-<input type="text" id="textval_${id}" value="Ciao!" maxlength="40" placeholder="Scrivi qualcosa...">
-<button class="send-btn" onclick="sendText('${dev.ip}','${id}')">Invia</button>
-</div>
-<div class="color-row" style="margin-top:8px">
-<input type="color" id="textcolor_${id}" value="#ffffff"
-onchange="sendText('${dev.ip}','${id}')">
-<span style="font-size:12px;color:var(--muted)">Colore testo</span>
-</div>
-</div>
-<div id="draw_section_${id}" class="draw-section" style="display:none">
-<div class="section-label">Pixel editor</div>
-<div class="draw-toolbar">
-<input type="color" class="draw-color" id="drawcolor_${id}" value="#ff6b35">
-<button class="tool-btn" onclick="fillAll('${id}','${gridSize}')">Riempi</button>
-<button class="tool-btn" onclick="clearDraw('${id}','${gridSize}')">Cancella</button>
-<button class="send-btn" onclick="sendDraw('${dev.ip}','${id}','${gridSize}')">Invia →</button>
-</div>
-<div class="pixel-grid" id="grid_${id}" style="grid-template-columns:repeat(${gridSize},1fr);max-width:${gridSize===16?'280px':'180px'}">
-${Array(gridSize*gridSize).fill(0).map((_,i) =>
-`<div class="pixel" id="px_${id}_${i}" data-idx="${i}" style="width:${gridSize===16?'15px':'20px'};height:${gridSize===16?'15px':'20px'}"></div>`
-).join('')}</div>
-</div>
-`:''}<div class="save-row">
-<button class="save-btn" id="savebtn_${id}" onclick="saveSettings('${dev.ip}','${id}')">💾 Salva impostazioni</button>
-<button class="reset-wifi-btn" onclick="resetWifi('${dev.ip}')" title="Reimposta WiFi">📶 Reset WiFi</button>
-</div>
-</div>
-`;// Init pixel grid drawing
-if (hasMatrix){initDrawGrid(div,id,gridSize,dev.ip);}return div;}function updateCardStatus(card,dev){const dot = card.querySelector('.status-dot');const statusText = card.querySelector('.device-status span');if (dot){dot.className = 'status-dot' + (dev.online ? '':' offline');}if (statusText){statusText.textContent = dev.online ? 'Online':'Offline';}}function toggleCard(id){const card = document.getElementById(id);card.classList.toggle('open');}// ─────────────────────────────────────────────
+function renderAll() {
+  const container = document.getElementById('devices');
+  const emptyState = document.getElementById('empty-state');
+
+  if (devices.length === 0) {
+    emptyState.style.display = 'block';
+    container.innerHTML = '';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  devices.forEach(dev => {
+    const id = 'card_' + dev.ip.replace(/\./g,'_');
+    if (!document.getElementById(id)) {
+      container.appendChild(buildCard(dev));
+    }
+  });
+}
+
+function buildCard(dev) {
+  const id = 'card_' + dev.ip.replace(/\./g,'_');
+  const icons = { faretto: '💡', matrice8: '🟦', matrice16: '⬛' };
+  const iconClass = { faretto: 'icon-faretto', matrice8: 'icon-matrice8', matrice16: 'icon-matrice16' };
+  const accentColors = { faretto: 'var(--accent)', matrice8: 'var(--accent2)', matrice16: 'var(--accent3)' };
+  const hasMatrix = dev.type === 'matrice8' || dev.type === 'matrice16';
+  const gridSize = dev.type === 'matrice16' ? 16 : 8;
+
+  const div = document.createElement('div');
+  div.className = 'device-card';
+  div.id = id;
+
+  div.innerHTML = `
+    <div class="device-header" onclick="toggleCard('${id}')">
+      <div class="device-icon ${iconClass[dev.type] || 'icon-faretto'}">${icons[dev.type] || '💡'}</div>
+      <div class="device-info">
+        <div class="device-name">${dev.name}</div>
+        <div class="device-meta">${dev.ip} · ${dev.leds} LED</div>
+      </div>
+      <div class="device-actions">
+        <div class="device-status">
+          <div class="status-dot ${dev.online ? '' : 'offline'}"></div>
+          <span>${dev.online ? 'Online' : 'Offline'}</span>
+        </div>
+        <button class="identify-btn" onclick="event.stopPropagation(); identify('${dev.ip}')" title="Identifica">📍</button>
+        <span class="collapse-arrow">▼</span>
+      </div>
+    </div>
+
+    <div class="device-body">
+
+      <!-- MODALITÀ -->
+      <div>
+        <div class="section-label">Modalità</div>
+        <div class="pills" id="pills_${id}">
+          <button class="pill off" onclick="setOff('${dev.ip}','${id}')">⏹ Off</button>
+          <button class="pill" onclick="setMode('${dev.ip}','${id}','RAINBOW')">🌈 Arcobaleno</button>
+          <button class="pill" onclick="setMode('${dev.ip}','${id}','FIRE')">🔥 Fuoco</button>
+          <button class="pill" onclick="setMode('${dev.ip}','${id}','TWINKLE')">✨ Stelle</button>
+          ${hasMatrix ? `<button class="pill" onclick="setMode('${dev.ip}','${id}','DRAW')">🎨 Disegna</button>` : ''}
+        </div>
+      </div>
+
+      <!-- COLORE FISSO -->
+      <div id="solid_section_${id}">
+        <div class="section-label">Colore fisso</div>
+        <div class="color-row">
+          <input type="color" id="color_${id}" value="#ffffff"
+            onchange="setSolid('${dev.ip}','${id}',this.value)">
+          <div class="color-presets">
+            ${['#ffffff','#ff4500','#ff8c00','#ffd700','#00ff88','#00bfff','#8a2be2','#ff69b4'].map(c =>
+              `<div class="color-swatch" style="background:${c}" onclick="setColorAndSolid('${dev.ip}','${id}','${c}')"></div>`
+            ).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- LUMINOSITÀ -->
+      <div>
+        <div class="section-label">Luminosità</div>
+        <div class="slider-row">
+          <input type="range" min="10" max="255" value="80" id="bright_${id}"
+            oninput="document.getElementById('brightval_${id}').textContent=Math.round(this.value/2.55)+'%'"
+            onchange="setBrightness('${dev.ip}',this.value)">
+          <span class="slider-val" id="brightval_${id}">31%</span>
+        </div>
+      </div>
+
+      ${hasMatrix ? `
+      <!-- VELOCITÀ -->
+      <div id="speed_section_${id}" style="display:none">
+        <div class="section-label">Velocità animazione</div>
+        <div class="slider-row">
+          <input type="range" min="5" max="200" value="25" id="speed_${id}"
+            oninput="document.getElementById('speedval_${id}').textContent=this.value+'ms'"
+            onchange="setSpeed('${dev.ip}',this.value)">
+          <span class="slider-val" id="speedval_${id}">25ms</span>
+        </div>
+      </div>
+
+      <!-- DIREZIONE ARCOBALENO -->
+      <div id="dir_section_${id}" style="display:none">
+        <div class="section-label">Direzione</div>
+        <div class="dir-grid" id="dir_${id}">
+          ${['NE','NW','SE','SW'].map(d =>
+            `<button class="dir-btn ${d==='SE'?'active':''}" onclick="setDir('${dev.ip}','${id}','${d}')">${d}</button>`
+          ).join('')}
+        </div>
+      </div>
+
+      <!-- TESTO SCORREVOLE -->
+      <!-- DISEGNA -->
+      <div id="draw_section_${id}" class="draw-section" style="display:none">
+        <div class="section-label">Pixel editor</div>
+        <div class="draw-toolbar">
+          <input type="color" class="draw-color" id="drawcolor_${id}" value="#ff6b35">
+          <button class="tool-btn" onclick="fillAll('${id}','${gridSize}')">Riempi</button>
+          <button class="tool-btn" onclick="clearDraw('${id}','${gridSize}')">Cancella</button>
+          <button class="send-btn" onclick="sendDraw('${dev.ip}','${id}','${gridSize}')">Invia →</button>
+        </div>
+        <div class="pixel-grid" id="grid_${id}" style="grid-template-columns:repeat(${gridSize},1fr);max-width:${gridSize===16?'280px':'180px'}">
+          ${Array(gridSize*gridSize).fill(0).map((_,i) =>
+            `<div class="pixel" id="px_${id}_${i}" data-idx="${i}" style="width:${gridSize===16?'15px':'20px'};height:${gridSize===16?'15px':'20px'}"></div>`
+          ).join('')}
+        </div>
+      </div>
+      ` : ''}
+
+      <!-- SALVA / RESET WIFI -->
+      <div class="save-row">
+        <button class="save-btn" id="savebtn_${id}" onclick="saveSettings('${dev.ip}','${id}')">💾 Salva impostazioni</button>
+        <button class="reset-wifi-btn" onclick="resetWifi('${dev.ip}')" title="Reimposta WiFi">📶 Reset WiFi</button>
+      </div>
+
+    </div>
+  `;
+
+  // Init pixel grid drawing
+  if (hasMatrix) {
+    initDrawGrid(div, id, gridSize, dev.ip);
+  }
+
+  return div;
+}
+
+function updateCardStatus(card, dev) {
+  const dot = card.querySelector('.status-dot');
+  const statusText = card.querySelector('.device-status span');
+  if (dot) { dot.className = 'status-dot' + (dev.online ? '' : ' offline'); }
+  if (statusText) { statusText.textContent = dev.online ? 'Online' : 'Offline'; }
+}
+
+function toggleCard(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+
+// ─────────────────────────────────────────────
 //  PIXEL GRID INTERACTION
 // ─────────────────────────────────────────────
-function initDrawGrid(cardEl,id,size,ip){const grid = cardEl.querySelector(`#grid_${id}`);let painting = false;let erasing = false;function paint(el){if (!el || !el.classList.contains('pixel')) return;const color = erasing ? '#111111':document.getElementById('drawcolor_' + id).value;el.style.background = color;}grid.addEventListener('pointerdown',e =>{painting = true;erasing = e.button === 2;e.target.setPointerCapture(e.pointerId);paint(e.target);});grid.addEventListener('pointermove',e =>{if (!painting) return;const el = document.elementFromPoint(e.clientX,e.clientY);paint(el);});grid.addEventListener('pointerup',() =>{painting = false;});grid.addEventListener('contextmenu',e => e.preventDefault());}function fillAll(id,size){const color = document.getElementById('drawcolor_' + id).value;for (let i = 0;i < size*size;i++){const px = document.getElementById('px_' + id + '_' + i);if (px) px.style.background = color;}}function clearDraw(id,size){for (let i = 0;i < size*size;i++){const px = document.getElementById('px_' + id + '_' + i);if (px) px.style.background = '#111111';}}// ─────────────────────────────────────────────
+function initDrawGrid(cardEl, id, size, ip) {
+  const grid = cardEl.querySelector(`#grid_${id}`);
+  let painting = false;
+  let erasing = false;
+
+  function paint(el) {
+    if (!el || !el.classList.contains('pixel')) return;
+    const color = erasing ? '#111111' : document.getElementById('drawcolor_' + id).value;
+    el.style.background = color;
+  }
+
+  grid.addEventListener('pointerdown', e => {
+    painting = true;
+    erasing = e.button === 2;
+    e.target.setPointerCapture(e.pointerId);
+    paint(e.target);
+  });
+  grid.addEventListener('pointermove', e => {
+    if (!painting) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    paint(el);
+  });
+  grid.addEventListener('pointerup', () => { painting = false; });
+  grid.addEventListener('contextmenu', e => e.preventDefault());
+}
+
+function fillAll(id, size) {
+  const color = document.getElementById('drawcolor_' + id).value;
+  for (let i = 0; i < size*size; i++) {
+    const px = document.getElementById('px_' + id + '_' + i);
+    if (px) px.style.background = color;
+  }
+}
+function clearDraw(id, size) {
+  for (let i = 0; i < size*size; i++) {
+    const px = document.getElementById('px_' + id + '_' + i);
+    if (px) px.style.background = '#111111';
+  }
+}
+
+// ─────────────────────────────────────────────
 //  API CALLS
 // ─────────────────────────────────────────────
-function setOff(ip,cid){api(ip,'/api/off');setActivePill(cid,'off');hideContextSections(cid);showSection('solid_section_' + cid,false);}function setMode(ip,cid,mode){if (mode === 'RAINBOW' || mode === 'FIRE' || mode === 'TWINKLE'){api(ip,'/api/setMode?val=' + mode);setActivePill(cid,mode);const hasMatrix = document.getElementById('speed_section_' + cid) !== null;hideContextSections(cid);showSection('solid_section_' + cid,false);if (hasMatrix){showSection('speed_section_' + cid,true);if (mode === 'RAINBOW') showSection('dir_section_' + cid,true);}}else if (mode === 'TEXT'){api(ip,'/api/setMode?val=TEXT');setActivePill(cid,'TEXT');hideContextSections(cid);showSection('text_section_' + cid,true);}else if (mode === 'DRAW'){api(ip,'/api/setMode?val=DRAW');setActivePill(cid,'DRAW');hideContextSections(cid);showSection('draw_section_' + cid,true);}}function setSolid(ip,cid,hex){const r = parseInt(hex.slice(1,3),16);const g = parseInt(hex.slice(3,5),16);const b = parseInt(hex.slice(5,7),16);api(ip,`/api/solid?r=${r}&g=${g}&b=${b}`);setActivePill(cid,'SOLID');hideContextSections(cid);showSection('solid_section_' + cid,true);}function setColorAndSolid(ip,cid,hex){document.getElementById('color_' + cid).value = hex;setSolid(ip,cid,hex);}function setBrightness(ip,val){api(ip,'/api/brightness?val=' + val);}function setSpeed(ip,val){api(ip,'/api/speed?val=' + val);}function setDir(ip,cid,dir){api(ip,'/api/dir?val=' + dir);document.querySelectorAll(`#dir_${cid}.dir-btn`).forEach(b => b.classList.remove('active'));document.querySelector(`#dir_${cid}[onclick*="${dir}"]`)?.classList.add('active');}function sendText(ip,cid){const txt = encodeURIComponent(document.getElementById('textval_' + cid).value);const hex = document.getElementById('textcolor_' + cid).value;const r = parseInt(hex.slice(1,3),16);const g = parseInt(hex.slice(3,5),16);const b = parseInt(hex.slice(5,7),16);api(ip,`/api/text?val=${txt}&r=${r}&g=${g}&b=${b}&size=1`);}function sendDraw(ip,cid,size){let data = '';for (let i = 0;i < size*size;i++){const px = document.getElementById('px_' + cid + '_' + i);const bg = px ? px.style.background:'#111111';const canvas = document.createElement('canvas');const ctx = canvas.getContext('2d');ctx.fillStyle = bg;ctx.fillRect(0,0,1,1);const d = ctx.getImageData(0,0,1,1).data;data += d[0].toString(16).padStart(2,'0') + d[1].toString(16).padStart(2,'0') + d[2].toString(16).padStart(2,'0') + ',';}// POST draw data
-try{fetch(`http://${ip}/api/draw`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data=' + data,signal:AbortSignal.timeout(4000)});}catch(e){}showToast('🎨 Disegno inviato!');}function identify(ip){api(ip,'/api/identify');showToast('📍 Lampeggiando...');}async function saveSettings(ip,cid){await api(ip,'/api/save');const btn = document.getElementById('savebtn_' + cid);btn.textContent = '✓ Salvato!';btn.classList.add('saved');setTimeout(() =>{btn.textContent = '💾 Salva impostazioni';btn.classList.remove('saved');},2000);}async function resetWifi(ip){if (!confirm('Vuoi davvero reimpostare il WiFi? Il dispositivo si riavvierà in modalità configurazione.')) return;await api(ip,'/api/resetwifi');showToast('📶 Dispositivo in modalità setup WiFi');}// ─────────────────────────────────────────────
+function setOff(ip, cid) {
+  api(ip, '/api/off');
+  setActivePill(cid, 'off');
+  hideContextSections(cid);
+  showSection('solid_section_' + cid, true);
+}
+
+function setMode(ip, cid, mode) {
+  if (mode === 'RAINBOW' || mode === 'FIRE' || mode === 'TWINKLE') {
+    api(ip, '/api/setMode?val=' + mode);
+    setActivePill(cid, mode);
+    const hasMatrix = document.getElementById('speed_section_' + cid) !== null;
+    hideContextSections(cid);
+    showSection('solid_section_' + cid, true);
+    if (hasMatrix) {
+      showSection('speed_section_' + cid, true);
+      if (mode === 'RAINBOW') showSection('dir_section_' + cid, true);
+    }
+  } else if (mode === 'DRAW') {
+    api(ip, '/api/setMode?val=DRAW');
+    setActivePill(cid, 'DRAW');
+    hideContextSections(cid);
+    showSection('draw_section_' + cid, true);
+  }
+}
+
+function setSolid(ip, cid, hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  api(ip, `/api/solid?r=${r}&g=${g}&b=${b}`);
+  setActivePill(cid, 'SOLID');
+  hideContextSections(cid);
+  showSection('solid_section_' + cid, true);
+}
+
+function setColorAndSolid(ip, cid, hex) {
+  document.getElementById('color_' + cid).value = hex;
+  setSolid(ip, cid, hex);
+}
+
+function setBrightness(ip, val) {
+  api(ip, '/api/brightness?val=' + val);
+}
+
+function setSpeed(ip, val) {
+  api(ip, '/api/speed?val=' + val);
+}
+
+function setDir(ip, cid, dir) {
+  api(ip, '/api/dir?val=' + dir);
+  document.querySelectorAll(`#dir_${cid} .dir-btn`).forEach(b => b.classList.remove('active'));
+  document.querySelector(`#dir_${cid} [onclick*="${dir}"]`)?.classList.add('active');
+}
+
+function sendDraw(ip, cid, size) {
+  let data = '';
+  for (let i = 0; i < size*size; i++) {
+    const px = document.getElementById('px_' + cid + '_' + i);
+    const bg = px ? px.style.background : '#111111';
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0,0,1,1);
+    const d = ctx.getImageData(0,0,1,1).data;
+    data += d[0].toString(16).padStart(2,'0') + d[1].toString(16).padStart(2,'0') + d[2].toString(16).padStart(2,'0') + ',';
+  }
+  // POST draw data
+  try {
+    fetch(`http://${ip}/api/draw`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: 'data=' + data,
+      signal: AbortSignal.timeout(4000)
+    });
+  } catch(e) {}
+  showToast('🎨 Disegno inviato!');
+}
+
+function identify(ip) {
+  api(ip, '/api/identify');
+  showToast('📍 Lampeggiando...');
+}
+
+async function saveSettings(ip, cid) {
+  await api(ip, '/api/save');
+  const btn = document.getElementById('savebtn_' + cid);
+  btn.textContent = '✓ Salvato!';
+  btn.classList.add('saved');
+  setTimeout(() => { btn.textContent = '💾 Salva impostazioni'; btn.classList.remove('saved'); }, 2000);
+}
+
+async function resetWifi(ip) {
+  if (!confirm('Vuoi davvero reimpostare il WiFi? Il dispositivo si riavvierà in modalità configurazione.')) return;
+  await api(ip, '/api/resetwifi');
+  showToast('📶 Dispositivo in modalità setup WiFi');
+}
+
+// ─────────────────────────────────────────────
 //  SYNC ALL
 // ─────────────────────────────────────────────
-function syncAll(mode){devices.filter(d => d.online).forEach(dev =>{const cid = 'card_' + dev.ip.replace(/\./g,'_');if (mode === 'OFF') setOff(dev.ip,cid);else setMode(dev.ip,cid,mode);});showToast('⚡ Tutti sincronizzati:' + mode);}function updateSyncBar(){const bar = document.getElementById('sync-bar');bar.classList.toggle('visible',devices.filter(d => d.online).length > 1);}// ─────────────────────────────────────────────
+function syncAll(mode) {
+  devices.filter(d => d.online).forEach(dev => {
+    const cid = 'card_' + dev.ip.replace(/\./g,'_');
+    if (mode === 'OFF') setOff(dev.ip, cid);
+    else setMode(dev.ip, cid, mode);
+  });
+  showToast('⚡ Tutti sincronizzati: ' + mode);
+}
+
+function updateSyncBar() {
+  const bar = document.getElementById('sync-bar');
+  bar.classList.toggle('visible', devices.filter(d => d.online).length > 1);
+}
+
+// ─────────────────────────────────────────────
 //  UI HELPERS
 // ─────────────────────────────────────────────
-function setActivePill(cid,mode){const container = document.getElementById('pills_' + cid);if (!container) return;container.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));// Match by text content or mode
-const map ={off:'⏹',RAINBOW:'🌈',FIRE:'🔥',TWINKLE:'✨',TEXT:'📝',DRAW:'🎨',SOLID:'colore'};container.querySelectorAll('.pill').forEach(p =>{if (p.textContent.trim().toLowerCase().includes((map[mode]||mode).toLowerCase())){p.classList.add('active');}});}function hideContextSections(cid){['speed_section_','dir_section_','text_section_','draw_section_','solid_section_'].forEach(s =>{showSection(s + cid,false);});}function showSection(id,visible){const el = document.getElementById(id);if (el) el.style.display = visible ? 'block':'none';}// ─────────────────────────────────────────────
+function setActivePill(cid, mode) {
+  const container = document.getElementById('pills_' + cid);
+  if (!container) return;
+  container.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  // Match by text content or mode
+  const map = { off:'⏹', RAINBOW:'🌈', FIRE:'🔥', TWINKLE:'✨', DRAW:'🎨', SOLID:'colore' };
+  container.querySelectorAll('.pill').forEach(p => {
+    if (p.textContent.trim().toLowerCase().includes((map[mode]||mode).toLowerCase())) {
+      p.classList.add('active');
+    }
+  });
+}
+
+function hideContextSections(cid) {
+  ['speed_section_','dir_section_','draw_section_','solid_section_'].forEach(s => {
+    showSection(s + cid, false);
+  });
+}
+
+function showSection(id, visible) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = visible ? 'block' : 'none';
+}
+
+// ─────────────────────────────────────────────
 //  TOAST
 // ─────────────────────────────────────────────
-let toastTimer;function showToast(msg){const t = document.getElementById('toast');t.textContent = msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer = setTimeout(() => t.classList.remove('show'),2500);}</script>
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
 </body>
 </html>
